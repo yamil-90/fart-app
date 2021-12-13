@@ -2,10 +2,10 @@ import React from 'react';
 import FartScreen from './FartScreen';
 import {View} from 'react-native';
 
-const HomeScreen =()=>{
+const HomeScreen =({navigation})=>{
 return(
     <View style={{flex:1}}>
-        <FartScreen/>
+        <FartScreen navigation={navigation}/>
     </View>
 )
 }

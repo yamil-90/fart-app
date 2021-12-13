@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Text, View, Animated } from 'react-native';
+import { Text, View, Animated, Button } from 'react-native';
 import { StyleSheet, TouchableWithoutFeedback } from 'react-native';
 import { Audio } from "expo-av";
 
@@ -7,10 +7,10 @@ import { Audio } from "expo-av";
 
 
 
-export default function FartScreen() {
+export default function FartScreen({ navigation }) {
   const [position] = useState(new Animated.Value(-15));
   const [code, setCode] = useState([]);
-  const [unlock, setUnlock]= useState(false)
+  const [unlock, setUnlock] = useState(false)
   const pressed = useRef(false);
 
 
@@ -56,10 +56,10 @@ export default function FartScreen() {
     let newCode = code;
     if (code.length === 4 || code.length === 7 || code.length === 11) {
       setCode([...code, ' ', value])
-      newCode.push(' ',value)
+      newCode.push(' ', value)
     } else if (code.length >= 13) {
       setCode([]);
-      newCode=[]
+      newCode = []
     }
     else {
       setCode([...code, value])
@@ -71,17 +71,18 @@ export default function FartScreen() {
     }
   }
   const compareCode = (array) => {
-    const arrayTemplate = [".", ".", "-", ".", " ", ".", "-", " ", ".", "-", "."," ","-"];
+    const arrayTemplate = [
+      ".", ".", "-", ".", " ", ".", "-", " ", ".", "-", ".", " ", "-"];
     if (!array) {
       // console.log('false not array');
       return false;
     }
-    if (array.length !== arrayTemplate.length){
-    // console.log('false lenght');
+    if (array.length !== arrayTemplate.length) {
+      // console.log('false lenght');
       return false;
     }
     for (let i = 0; i < array.length; i++) {
-      if (array[i] !==arrayTemplate[i]){
+      if (array[i] !== arrayTemplate[i]) {
         // console.log('false content');
         return false;
       }
@@ -105,6 +106,15 @@ export default function FartScreen() {
   }
   return (
     <View style={styles.container}>
+      {unlock ?
+        <View style={styles.menu}>
+          <Button onPress={() => navigation.navigate('Second')} title='navigate' />
+        </View>
+        :
+        <View style={styles.menu}>
+          <Text>lock</Text>
+        </View>
+      }
       <Text style={styles.title}>{unlock ? 'true' : 'false'}</Text>
       <TouchableWithoutFeedback
         touchSoundDisabled={true}
@@ -142,7 +152,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: 'bold',
-    marginBottom:10
+    marginBottom: 10
   },
   button: {
     width: 180,
@@ -170,8 +180,13 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 20,
   },
-  code:{
-    bottom:0,
-    position:'absolute'
+  code: {
+    bottom: 0,
+    position: 'absolute'
+  },
+  menu: {
+    position: 'absolute',
+    top: 5,
+    right: 5
   }
 })

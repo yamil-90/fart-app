@@ -1,10 +1,10 @@
 
 import React from 'react';
-import Home from "./components/screens/Home";
+import Navigation from "./components/screens/Navigation";
 
 export default function App() {
   return (
-      <Home />
+      <Navigation />
   );
 }
 
