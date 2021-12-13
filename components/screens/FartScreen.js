@@ -9,7 +9,10 @@ import { Audio } from "expo-av";
 
 export default function FartScreen() {
   const [position] = useState(new Animated.Value(-15));
-  const pressed= useRef(false)
+  const [code, setCode] = useState([]);
+  const [unlock, setUnlock]= useState(false)
+  const pressed = useRef(false);
+
 
   const playSoundAsync = async () => {
     try {
@@ -23,8 +26,9 @@ export default function FartScreen() {
     }
   }
   const handleButtonDown = () => {
+
     pressed.current = true
-    console.log('fart in');
+    // console.log('fart in');
     playSoundAsync();
     Animated.timing(position, {
       toValue: 0,
@@ -34,33 +38,74 @@ export default function FartScreen() {
   }
 
   const handleButtonUp = () => {
+    if (pressed.current) {
+      changeCode('.')
+    }
     pressed.current = false;
-    console.log('fart out');
+    // console.log('fart out');
     Animated.timing(position, {
       toValue: -13,
       duration: 50,
       useNativeDriver: false,
     }).start();
-  
+
+  }
+
+  const changeCode = (value) => {
+    // console.log(code);
+    let newCode = code;
+    if (code.length === 4 || code.length === 7 || code.length === 11) {
+      setCode([...code, ' ', value])
+      newCode.push(' ',value)
+    } else if (code.length >= 13) {
+      setCode([]);
+      newCode=[]
+    }
+    else {
+      setCode([...code, value])
+      newCode.push(value)
+    }
+
+    if (compareCode(newCode)) {
+      setUnlock(true)
+    }
+  }
+  const compareCode = (array) => {
+    const arrayTemplate = [".", ".", "-", ".", " ", ".", "-", " ", ".", "-", "."," ","-"];
+    if (!array) {
+      // console.log('false not array');
+      return false;
+    }
+    if (array.length !== arrayTemplate.length){
+    // console.log('false lenght');
+      return false;
+    }
+    for (let i = 0; i < array.length; i++) {
+      if (array[i] !==arrayTemplate[i]){
+        // console.log('false content');
+        return false;
+      }
+    }
+    return true;
   }
 
   const handleLongPress = () => {
-    
-    const loop = ()=>{
+    changeCode('-')
+    pressed.current = false
+    const loop = () => {
       // console.log(pressed.current)
-      if(pressed.current){
-      playSoundAsync()
-      } else (
+      if (pressed.current) {
+        playSoundAsync()
+      } else {
         clearInterval(timer)
-      )
+      }
     }
-     const timer = setInterval(loop, 500)
-    
-    
+    const timer = setInterval(loop, 500)
+
   }
   return (
     <View style={styles.container}>
-      <Text>{pressed ? 'true' : 'false'}</Text>
+      <Text style={styles.title}>{unlock ? 'true' : 'false'}</Text>
       <TouchableWithoutFeedback
         touchSoundDisabled={true}
         onPressIn={handleButtonDown}
@@ -77,6 +122,12 @@ export default function FartScreen() {
           </View>
         </View>
       </TouchableWithoutFeedback>
+      <View style={styles.code}>
+
+        <Text>{code}</Text>
+
+
+      </View>
 
     </View>
   )
@@ -91,6 +142,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: 'bold',
+    marginBottom:10
   },
   button: {
     width: 180,
@@ -118,4 +170,8 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 20,
   },
+  code:{
+    bottom:0,
+    position:'absolute'
+  }
 })
